@@ -1,7 +1,6 @@
 import React, {useReducer, useState} from "react";
 
-
-
+// Use Reducer is implemented of architectural and more readable way 
 const initScore = [
     {
         id : 1,
@@ -33,9 +32,9 @@ const reducer = (state, action) => {
 }
 
 
-export function Counter () {
+export function Counter() {
     const [score, dispatch] = useReducer(reducer, initScore);
-    
+
     const handleIncrease = (player) => {
         dispatch({type : "INCREASE", id : player.id})
     }
@@ -55,3 +54,38 @@ export function Counter () {
     </>)
 
 }
+
+
+
+
+// (Insert the CounterState and CounterAction types from the previous step here)
+
+const CounterComponent = () => {
+  // state is inferred as CounterState
+  // dispatch is inferred to only accept CounterAction
+  const [state, dispatch] = useReducer(counterReducer, initialState);
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Count: {state.count}</h1>
+      
+      {/* Correct usage: TypeScript is happy */}
+      <button onClick={() => dispatch({ type: 'increment', payload: 5 })}>
+        Add 5
+      </button>
+
+      <button onClick={() => dispatch({ type: 'decrement', payload: 1 })}>
+        Subtract 1
+      </button>
+
+      <button onClick={() => dispatch({ type: 'reset' })}>
+        Reset
+      </button>
+
+      {/* ERROR: This would fail type checking because 
+        'payload' is missing for 'increment' 
+      */}
+      {/* <button onClick={() => dispatch({ type: 'increment' })}>Error</button> */}
+    </div>
+  );
+};

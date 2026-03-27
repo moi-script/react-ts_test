@@ -11,7 +11,7 @@ const initScore = [
         id : 2,
         score : 0,
         name : "Sally"        
-    },
+},
     
 ]
 

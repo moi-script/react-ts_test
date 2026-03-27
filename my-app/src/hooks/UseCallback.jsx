@@ -1,4 +1,4 @@
-import { useCallback } from "react"; 
+import { Children, useCallback } from "react"; 
 
 
 
@@ -37,6 +37,13 @@ const handleSave = useCallback(() => {
 
 
 
+// 3 hooks Logic
+
 // useMemo -> calculate a certain function, it does not recalculate in the next render
 // useCallback -> it saves a memory and return it to be use, will be executed when call for action
 // useReducer ->  will only be trigger when dispatch is called, nothing else
+
+
+
+
+

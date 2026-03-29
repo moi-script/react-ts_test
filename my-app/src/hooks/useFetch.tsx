@@ -1,26 +1,46 @@
-import { useState, useEffect } from "react";
 
-interface UserLogin {
-    email : string,
-    id : string,
-    password : string
-    createdAt : Date
-    role: string,
-    fullname? : string
+interface UserData {
+    fullname : string,
+    data? : string,
+    message : string
+}
+
+
+// interface SignPayload {
+//     email : string,
+//     password :string,
+//     token : string
+// }
+
+// | { type: "LOGIN_SUCCESS"; payload: SignPayload } 
+
+
+
+export const loginRequest = async (email : string, password : string) : Promise<UserData> => {
+    const response = await fetch("http://localhost:3000/login", {
+        method : "POST",
+        headers : {'Content-Type': "application/json"},
+        body : JSON.stringify({email, password})
+    })
+
+    if(!response.ok) throw new Error("Unauthorized");
+
+    const {fullname, data} = await response.json();
+    return {message : "LOGIN_SUCESS", fullname, data};
 
 }
 
-export const loginFetch = (url : string, payload : UserLogin) => {
-    const [user, setUser] = useState<UserLogin | null>(null);
 
-    useEffect(() => {
-        fetch(url, {
-            method : "POST",
-            body : JSON.stringify(payload)
-        }).then(res => res.json())
-          .then(data => setUser(data))
-    }, [url])
+export const signInRequest = async (email : string, password : string, fullname : string): Promise<UserData> => {
+      const response = await fetch("http://localhost:3000/signin", {
+        method : "POST",
+        headers : {'Content-Type': "application/json"},
+        body : JSON.stringify({email, password, fullname})
+    })
 
-    return [user]
+    if(response.ok) throw new Error("Account fail");
+    
+    return {message : "Signin", fullname};
+
+    
 }
-

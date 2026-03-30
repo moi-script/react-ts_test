@@ -1,22 +1,6 @@
+import {type AuthAction } from "./Context"
 
-interface UserData {
-    fullname : string,
-    data? : string,
-    message : string
-}
-
-
-// interface SignPayload {
-//     email : string,
-//     password :string,
-//     token : string
-// }
-
-// | { type: "LOGIN_SUCCESS"; payload: SignPayload } 
-
-
-
-export const loginRequest = async (email : string, password : string) : Promise<UserData> => {
+export const loginRequest = async (email : string, password : string) : Promise<AuthAction> => {
     const response = await fetch("http://localhost:3000/login", {
         method : "POST",
         headers : {'Content-Type': "application/json"},
@@ -25,22 +9,23 @@ export const loginRequest = async (email : string, password : string) : Promise<
 
     if(!response.ok) throw new Error("Unauthorized");
 
-    const {fullname, data} = await response.json();
-    return {message : "LOGIN_SUCESS", fullname, data};
+    const {fullname} = await response.json();
 
+    return {type : "LOGIN_SUCCESS", payload :{email, password, fullname}};
 }
 
 
-export const signInRequest = async (email : string, password : string, fullname : string): Promise<UserData> => {
+export const signInRequest = async (email : string, password : string, fullname : string): Promise<AuthAction> => {
       const response = await fetch("http://localhost:3000/signin", {
         method : "POST",
         headers : {'Content-Type': "application/json"},
         body : JSON.stringify({email, password, fullname})
     })
 
-    if(response.ok) throw new Error("Account fail");
+    if(!response.ok) throw new Error("Account creation failed");
     
-    return {message : "Signin", fullname};
+    // return {message : "Signin", fullname};
+    // const {} = await response.json();
+    return {type : "SIGNIN_SUCCCESS", payload : {email, password, fullname}}
 
-    
 }

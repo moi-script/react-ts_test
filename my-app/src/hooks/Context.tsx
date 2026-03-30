@@ -8,15 +8,16 @@ interface AuthState {
     isLoading : boolean,
     error : string | null
 }
-
-interface SignPayload {
+ interface SignPayload {
     email : string,
     password :string,
-    token : string
+    token? : string,
+    fullname : string,
+    birthdate? : string,
 }
 
 
- type AuthAction = 
+ export type AuthAction = 
   | { type: "LOGIN_START" }
   | { type: "LOGIN_SUCCESS"; payload: SignPayload }
   | { type: "SIGNIN_SUCCCESS"; payload: SignPayload }

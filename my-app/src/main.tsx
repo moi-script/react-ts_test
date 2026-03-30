@@ -1,15 +1,33 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { Button } from "@/components/ui/button"
-import App from './App.tsx'
-
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ProtectedRoute } from './hooks/Protect.tsx'
 import { AuthProvider } from './hooks/Context.tsx'
 import AuthPage from './pages/Authpage.tsx'
+import { Dashboard } from './pages/Dashboard.tsx'
+
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <AuthPage />,
+  },
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <Dashboard /> 
+      </ProtectedRoute>
+    ),
+  },
+]);
+
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-    <AuthPage/>
+      <RouterProvider router={router}/>
+
     </AuthProvider>
   </StrictMode>
 )

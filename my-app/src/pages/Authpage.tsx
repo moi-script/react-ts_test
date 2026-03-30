@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,50 +12,56 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Fullscreen, Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/Context"
+import { useAuth } from "@/hooks/Context";
 import { loginRequest, signInRequest } from "@/hooks/useFetch";
-
-interface UserAccount {
-  email: string;
-  password: string;
-  fullname: string;
-}
-
-// const LoginForm = ()
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [view, setView] = useState<"auth" | "forgotPassword">("auth");
 
-  const {state, dispatch} = useAuth();
-  // dispatch reducer from global context
+  const { state, dispatch } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Simulated loading state for the buttons
-  const onSubmit = (e: React.SubmitEvent<HTMLFormElement>, type: string) => {
+  const from = location.state?.from?.pathname || "/";
+
+  const onSubmit = async (
+    e: React.SubmitEvent<HTMLFormElement>,
+    type: "login" | "sign_in" | "forgot",
+  ) => {
     e.preventDefault();
 
-    const actionType = async (type: string) => {
+    dispatch({ type: "LOGIN_START" });
+
+    try {
       const formData = new FormData(e.currentTarget);
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
-      let userPayload = null;
-      switch (type) {
-        case "login":
-          userPayload = await loginRequest(email, password);
-          // dispatch(userPayload); // need to match the user response type -> dispatch type 
-        case "sign_in":
-          const fullname = formData.get("fullname") as string; 
-          userPayload = await signInRequest(email, password, fullname)
+
+      let action;
+
+      if (type === "login") {
+        action = await loginRequest(email, password);
+      } else if (type === "sign_in") {
+        const fullname = formData.get("fullname") as string;
+        action = await signInRequest(email, password, fullname);
       }
-    };
-
-    actionType(type);
-
-    setIsLoading(true);
+    } catch (err: any) {
+      dispatch({ type: "LOGIN_FAILURE", payload: err.message });
+    } finally {
+      setIsLoading(true);
+    }
     // setTimeout(() => setIsLoading(false), 2000)
   };
 
-  // A simple Google SVG icon
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      console.log("User login");
+      navigate(from, { replace: true });
+    }
+  }, [state.isAuthenticated, navigate, from]);
+
   const GoogleIcon = () => (
     <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4" fill="currentColor">
       <path
@@ -82,7 +88,6 @@ export default function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <div className="w-full max-w-md">
         {view === "forgotPassword" ? (
-          /* FORGOT PASSWORD VIEW */
           <Card>
             <CardHeader className="space-y-1">
               <div className="flex items-center mb-2">

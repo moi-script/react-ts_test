@@ -1,0 +1,9 @@
+
+
+login / sign in / forgot
+--> google auth
+--> mongo db + typescript set up
+
+// server side architecture --> reusable architecture
+
+
